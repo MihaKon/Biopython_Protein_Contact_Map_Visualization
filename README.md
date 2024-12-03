@@ -15,7 +15,6 @@ This script generates a distance matrix and a contact map from a given PDB file 
 - pillow==11.0.0
 - pyparsing==3.2.0
 - python-dateutil==2.9.0.
-post0
 - six==1.16.0
 
 ## Installation
@@ -27,13 +26,13 @@ pip install -r requirements.txt
 ## Usage
 
 ```
-py -m get_plots.py -f <PDB_FILE_PATH>
+py get_plot.py -f <PDB_FILE_PATH>
 ```
 
 ### Example Result
 
 ```
-py -m get_plots.py -f 4ywo.pdb
+py ge_plot.py -f 4ywo.pdb
 ```
 
 ![Distance Matrix](./.media/4YWO_contact_map_black.png)
