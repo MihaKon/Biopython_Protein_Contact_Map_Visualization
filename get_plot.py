@@ -2,7 +2,7 @@ import pathlib
 import argparse
 
 from Bio.PDB.Polypeptide import is_aa
-from Bio.PDB import PDBParser, Structure, Residue, Chain
+from Bio.PDB import PDBParser, Structure, Residue, Chain, Atom
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -20,8 +20,8 @@ def read_pdb(file_path: pathlib.Path, file_name: str) -> Structure.Structure:
     return structure
 
 
-def calc_dist(atom1, atom2) -> float:
-    diff_vector = atom1 - atom2
+def calc_dist(atom1: Atom, atom2: Atom) -> float:
+    diff_vector = atom1.coord - atom2.coord
     return np.sqrt(np.sum(diff_vector * diff_vector))
 
 
@@ -40,8 +40,10 @@ def calc_dist_matrix(structure: Structure.Structure) -> np.array:
     
     for i, atom1 in enumerate(ca_atoms):
         for j, atom2 in enumerate(ca_atoms):
-            if i != j:
+            if i != j:      
                 dist_matrix[i, j] = calc_dist(atom1, atom2)
+            else:
+                dist_matrix[i, j] = np.nan
                 
     return dist_matrix
 
