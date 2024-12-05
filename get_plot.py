@@ -43,7 +43,7 @@ def calc_dist_matrix(structure: Structure.Structure) -> np.array:
             if i != j:      
                 dist_matrix[i, j] = calc_dist(atom1, atom2)
             else:
-                dist_matrix[i, j] = np.nan
+                dist_matrix[i, j] = 0.0
                 
     return dist_matrix
 
