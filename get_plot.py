@@ -20,23 +20,30 @@ def read_pdb(file_path: pathlib.Path, file_name: str) -> Structure.Structure:
     return structure
 
 
-def calc_residue_dist(residue_one: Residue.Residue, residue_two: Residue.Residue) -> float:
-    if not residue_one.has_id("CA") or not residue_two.has_id("CA"):
-        return 0
-    diff_vector = residue_one["CA"].coord - residue_two["CA"].coord
+def calc_dist(atom1, atom2) -> float:
+    diff_vector = atom1 - atom2
     return np.sqrt(np.sum(diff_vector * diff_vector))
 
 
-def calc_dist_matrix(chain_one: Chain.Chain , chain_two: Chain.Chain) -> np.array:
-    answer = np.zeros((len(chain_one), len(chain_two)))
-    for row, residue_one in enumerate(chain_one):
-        if not is_aa(residue_one):
-            row_counter = row
-            break
-        for col, residue_two in enumerate(chain_two):
-            answer[row, col] = calc_residue_dist(residue_one, residue_two)
-    answer = answer[:row_counter, :row_counter]
-    return answer
+def calc_dist_matrix(structure: Structure.Structure) -> np.array:
+    ca_atoms = []
+    
+    for model in structure:
+        for chain in model:
+            for residue in chain:
+                if 'CA' in residue:
+                    ca_atoms.append(residue['CA'])
+    
+    num_atoms = len(ca_atoms)
+
+    dist_matrix = np.zeros((num_atoms, num_atoms))
+    
+    for i, atom1 in enumerate(ca_atoms):
+        for j, atom2 in enumerate(ca_atoms):
+            if i != j:
+                dist_matrix[i, j] = calc_dist(atom1, atom2)
+                
+    return dist_matrix
 
 def plot_distance_matrix(dist_matrix: list[list[float]], hot_bar: bool = True) -> plt:
     plt.figure(figsize=(10, 10)) 
@@ -61,7 +68,7 @@ def main():
     if not chains:
         raise ValueError("Chain not found")
 
-    dist_matrix = calc_dist_matrix(chains[0], chains[0])
+    dist_matrix = calc_dist_matrix(structure)
     contact_map = dist_matrix < 8.0
 
     contact_map_color = plot_distance_matrix(dist_matrix)
